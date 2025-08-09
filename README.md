@@ -10,19 +10,22 @@ fish are individual state machines with set behaviors that can cycle at random i
 
 # fish behavior
 
+```
 simple enum {
 	SWIMMING
 	IDLE
 	SLEEPING - BUBBLES
 }
+```
 
 # fish object
 
+```
 components {
 	pos x, y, z (vectors)
 	vel x, y, z (vectors)
 	color (int random)
 	state (selected at random from enum)
 }
-
+```
 
