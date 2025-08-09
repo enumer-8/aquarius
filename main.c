@@ -57,18 +57,11 @@ typedef struct __attribute__ ((packed, aligned(4))) {
   uint32 vert_count;
  } dcm_mesh_hdr;
 
-// DCM TEXCOORD STRUCT - FOR EASE OF USE
-typedef struct __attribute__ ((packed, aligned(4))) {
-  float u;
-  float v;
-} texcoord_t;
-
 // DCM VERTEX STRUCT - ALIGNED 32 BYTES FOR PVR
 typedef struct __attribute__ ((packed, aligned(32))) {
   float x, y, z;              // 12 bytes
-  char _padding[7]            // 7  bytes 
-  texcoord_t tex0;            // 4  bytes
-  texcoord_t tex1;            // 4  bytes
+  float u, v;                 // 8  bytes
+  char _padding[7];           // 7  bytes
   uint32 color;               // 4  bytes 
   uint8 normal;               // 1  byte
 } dcm_vertex; 
@@ -121,21 +114,24 @@ typedef struct __attribute__ ((packed, aligned(4))) {
 
 
 
-// DCM FILE LOADER FUNCTION
+// DCM FILE LOADER FUNCTION - thanks @Falco Girgis
 // ========================
-  void dcm_file_loader(const char *filename, bool final_tri_strip){
+void per_frame(void){
+  void dcm_vertex_submit(dcm_vertex *vert, bool final_tri_strip){
 
-     pvr_vertex_t pvr = {
-       .flags = final_tri_strip? PVR_CMD_VERTEX : PVR_CMD_VERTEX_EOL;
-       .x     = dcm_vertex->x,
-       .y     = dcm_vertex->y,
-       .z     = dcm_vertex->z,
-       .argb  = dcm_vertex->color,
-     }
-
-    pvr_prim(&pvr);
+     pvr_vertex_t submitted_vert;
+     
+               submitted_vert.flags = final_tri_strip? PVR_CMD_VERTEX_EOL : PVR_CMD_VERTEX;
+               submitted_vert.x     = vert->x,
+               submitted_vert.y     = vert->y,
+               submitted_vert.z     = vert->z,
+               submitted_vert.argb  = vert->color;
+               submitted_vert.u     = vert->u;
+               submitted_vert.v     = vert->v; 
     
-  }
+       pvr_prim(&submitted_vert, sizeof(submitted_vert));
+   } 
+}
 
 // ENTITY (FISH)
 // typedef struct __attribute__ ((packed, aligned(4))) {
@@ -166,6 +162,8 @@ int main(int argc, char **argv){
 
 // TEST OUT DCM FILE LOADER
 //    dcm_file_loader("fish_poly.dcm");
+
+    per_frame();
 
 // ADDRESS POINTER TEST
     bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
