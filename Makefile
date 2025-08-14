@@ -28,6 +28,9 @@ rm-elf:
 disk:
 	$(DISK) -e $(TARGET) -o aquarius.cdi
 
+test:
+	$(FLYCAST) $(TARGET)
+
 $(TARGET): $(OBJS)
 	kos-cc -o $(TARGET) $(OBJS) -L$(KOS_BASE)/lib -lKGL
 

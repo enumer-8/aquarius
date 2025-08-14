@@ -112,7 +112,24 @@ typedef struct __attribute__ ((packed, aligned(4))) {
 // =================================
 
 
+// basic scale matrix test - thanks @pikuma :)
+// 
+ typedef struct __attribute__((aligned(32))){
+   float m[4][4];
+ } mat4x4_t;
 
+ typedef struct __attribute__((packed, aligned(4))){
+   float x, y, z, w;
+ } vec4_simple_t;
+
+mat4x4_t scale(float sx, float sy, float sz, float w){
+  __asm__ __volatile__
+
+            ("frch\n"
+             "fldi1 fr0\n"
+            );
+        
+        }
 
 // DCM FILE LOADER FUNCTION - thanks @Falco Girgis
 // ========================
@@ -127,7 +144,8 @@ void per_frame(void){
                submitted_vert.z     = vert->z,
                submitted_vert.argb  = vert->color;
                submitted_vert.u     = vert->u;
-               submitted_vert.v     = vert->v; 
+               submitted_vert.v     = vert->v;
+               submitted_vert.oargb = 0;
     
        pvr_prim(&submitted_vert, sizeof(submitted_vert));
    } 
@@ -158,12 +176,7 @@ int main(int argc, char **argv){
   dcm_small_file_hdr dcm_file_hdr;
   
 // EVENT LOOP BEGINS HERE
-  while(1){
-
-// TEST OUT DCM FILE LOADER
-//    dcm_file_loader("fish_poly.dcm");
-
-    per_frame();
+  while(1){    
 
 // ADDRESS POINTER TEST
     bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
