@@ -156,6 +156,32 @@ void init_identity(){
 printf("Hey, I think this worked!\n");
 }
 
+void init_diag_value_matrix(float x, float y, float z, float w){
+
+  init_identity();
+
+  __asm__ __volatile__ (
+  
+
+  "frchg\n"
+  "fmov %[x], fr0\n"
+  "fmov %[y], fr5\n"
+  "fmov %[z], fr10\n"
+  "fmov %[w], fr15\n"
+  "frchg\n"  
+  
+    :
+    : [x] "m" (x),
+      [y] "m" (y),
+      [z] "m" (z),
+      [w] "m" (w)
+
+    : "fr0", "fr5", "fr10", "fr15"
+
+  );
+
+}
+
 
 // DCM FILE LOADER FUNCTION - thanks @Falco Girgis
 // ========================
