@@ -11,8 +11,8 @@
 #include <dc/fmath.h>
 #include <dc/maple/controller.h>
 #include <dc/biosfont.h>
-#include <dc/matrix.h>
-#include <dc/matrix3d.h>
+// #include <dc/matrix.h>
+// #include <dc/matrix3d.h>
 
 #include <kos.h>
 
@@ -111,8 +111,16 @@ typedef struct __attribute__ ((packed, aligned(4))) {
 // HAS TO BE REGENERATED EVERY FRAME
 // =================================
 
+      //   | 1 0 0 0 | fr0 ..
+      //   | 0 1 0 0 | fr1 ..
+      //   | 0 0 1 0 | fr2 .. 
+      //   | 0 0 0 1 | fr3 ..
+
+// Just for the sake of understanding: basic identity matrix
+// setup -> SH-4 works in column major order 
 
 // basic scale matrix test - thanks @pikuma :)
+// should probably init identity matrix first lol
 // 
  typedef struct __attribute__((aligned(32))){
    float m[4][4];
@@ -122,14 +130,32 @@ typedef struct __attribute__ ((packed, aligned(4))) {
    float x, y, z, w;
  } vec4_simple_t;
 
-mat4x4_t scale(float sx, float sy, float sz, float w){
-  __asm__ __volatile__
 
-            ("frch\n"
-             "fldi1 fr0\n"
-            );
-        
-        }
+// thanks for the explanation @Falco Girgis
+void init_identity(){
+  __asm__ __volatile__  (
+
+  "frchg\n"             // change to back bank
+  "fldi1 fr0\n"         // load 1 into first matrix position
+  "fschg\n"             // enable double precision mode
+  "fldi0 fr1\n"         // zero loading in suitable spots
+  "fldi0 fr2\n"
+  "fldi0 fr3\n"
+  "fldi0 fr4\n"
+  "fldi1 fr5\n"
+  "fmov dr2, dr6\n"     // using fmov.d to move 0 pairs into fr6/7
+  "fmov dr2, dr8\n"     // same thing here 
+  "fldi1 fr10\n"
+  "fmov dr2, dr12\n"
+  "fschg\n"
+  "fldi0 fr14\n"
+  "fldi1 fr15\n"                                        
+  "frchg\n"                      
+
+  );
+printf("Hey, I think this worked!\n");
+}
+
 
 // DCM FILE LOADER FUNCTION - thanks @Falco Girgis
 // ========================
@@ -181,6 +207,10 @@ int main(int argc, char **argv){
 // ADDRESS POINTER TEST
     bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
 
+// MATRIX TEST
+
+    init_identity();
+     
 // PVR SCENE SETUP - OPAQUE DRAWING
     pvr_scene_begin();
     pvr_list_begin(PVR_LIST_OP_POLY);

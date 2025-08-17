@@ -13,14 +13,14 @@ CDI  = aquarius.cdi
 FLYCAST = ~/flycast/build/flycast
 OBJS = main.o
 DISK = ~/mkdcdisc/builddir/mkdcdisc
-
+OBJDUMP = sh-elf-objdump -d -S 
 
 all: rm-elf $(TARGET)
 
 include $(KOS_BASE)/Makefile.rules
 
 clean: rm-elf
-	-rm -f $(OBJS)
+	-rm -f $(OBJS) *.asm
 
 rm-elf:
 	-rm -f $(TARGET) *.cdi
@@ -30,6 +30,9 @@ disk:
 
 test:
 	$(FLYCAST) $(TARGET)
+
+objdump:
+	$(OBJDUMP) $(TARGET) > objdump.asm
 
 $(TARGET): $(OBJS)
 	kos-cc -o $(TARGET) $(OBJS) -L$(KOS_BASE)/lib -lKGL
