@@ -162,8 +162,6 @@ void init_diag_value_matrix(float x, float y, float z, float w){
 
   __asm__ __volatile__ (
   
-
-  "frchg\n"
   "fmov %[x], fr0\n"
   "fmov %[y], fr5\n"
   "fmov %[z], fr10\n"
@@ -171,10 +169,10 @@ void init_diag_value_matrix(float x, float y, float z, float w){
   "frchg\n"  
   
     :
-    : [x] "m" (x),
-      [y] "m" (y),
-      [z] "m" (z),
-      [w] "m" (w)
+    : [x] "f" (x),
+      [y] "f" (y),
+      [z] "f" (z),
+      [w] "f" (w)
 
     : "fr0", "fr5", "fr10", "fr15"
 
