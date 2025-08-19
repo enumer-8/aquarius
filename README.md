@@ -38,7 +38,7 @@ make all - generates an ELF
 
 make test - calls flycast to run the ELF
 
-make disc - generate CDI
+make disk - generate CDI
 
 make run - calls flycast to run the CDI
 
