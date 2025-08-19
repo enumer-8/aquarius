@@ -11,7 +11,7 @@
 TARGET = aquarius.elf
 CDI  = aquarius.cdi
 FLYCAST = ~/flycast/build/flycast
-OBJS = main.o
+OBJS = main.o 
 DISK = ~/mkdcdisc/builddir/mkdcdisc
 OBJDUMP = sh-elf-objdump -d -S 
 
