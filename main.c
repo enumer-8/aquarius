@@ -24,20 +24,6 @@
 
 #define VERBOSE
 
-// ENTITY (FISH)
-// typedef struct __attribute__ ((packed, aligned(4))) {
-//   uint16 pos_x, pos_y, pos_z;
-//   uint8  vel_x, vel_y, vel_z;
-//   uint8  color_id;
-//   fish_state_t state;
-// } fish_entity;
-
-// typedef enum state {
-//   FISH_IDLE,
-//   FISH_SWIMMING,
-//   FISH_SLEEPING,
-// } fish_state_t;
-
 // MAIN STARTS HERE!
 int main(int argc, char **argv){
 
