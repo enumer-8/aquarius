@@ -86,10 +86,7 @@ printf("Hey, I think this worked!\n");
 // TODO: removing this routine fixed the graphics bug of my background not displaying properly: figure out why 
 __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 
-  init_identity();
-
-  asm(R"( 
-    
+  asm volatile(R"(  
   )");
 
 }

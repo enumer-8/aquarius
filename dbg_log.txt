@@ -1,0 +1,29 @@
+# 2025.08.24
+-------------
+
+starting this so I have a running commentary on my changes and funny things I notice happening
+in my code
+
+today's discovery: the first version of the init_diag_value_matrix was messing with the execution
+of the pvr_set_bg_color() function. originally, the function worked properly with the init_identity() matrix
+function. at first i thought it was simply an emulator bug but it seemed suspicious that a single function 
+would cause display corruption like that. additionally the bfont_draw_str_vram_fmt function still works
+properly and displays the memory address of the dcm_file_hdr.version struct element consistently, so 
+i ruled out the emulator.
+
+i've since transposed the header and inline functions to C++ alongside main and am now reworking the diagonal
+matrix loading function
+
+changes:
+	main.c   -> main.cpp
+	matrix.h -> matrix.hpp
+	removed contents of init_diag_value_matrix
+	transposed init_identity() to C++ style inline asm
+
+results:
+	program still compiles and displays screen background color correctly
+
+tbd: 
+	complete diagonal value matrix with correct formatting and instructions
+
+
