@@ -80,14 +80,37 @@ __inline__ void init_identity(){
 	  frchg                      
 
   )");
-printf("Hey, I think this worked!\n");
 }
 
-// TODO: removing this routine fixed the graphics bug of my background not displaying properly: figure out why 
 __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 
   asm volatile(R"(  
-  )");
+  
+    frchg                 // change to back bank - can't copy FP values directly to back bank via inline asm (@Falco)
+    fldi0 fr1             // filling out all the zeros in the appropriate places as before
+    fldi0 fr2
+    fldi0 fr3
+    fschg                 // change to double precision mode (we can see whether or not to move this instruction around, manual says it has 1 cycle cost)
+    fmov dr2, dr6         // copy zeros fast via fmovd 
+    fmov dr2, dr8         // same thing here
+    fldi0 fr11
+    fmov dr6, dr12        // another fast copy of a double-precision register
+    fldi0 fr14
+    fschg                 // get out of double precision mode
+
+    fmov.s %@[x], fr0     // copying function arguments into requisite registers - addresses, not actual values
+    fmov.s %@[y], fr5
+    fmov.s %@[z], fr10
+    fmov.s %@[w], fr15
+
+    frchg                 // switch to front bank after end of routine
+
+    )"
+    
+    : 
+    : [x] "r" (&x), [y] "r" (&y), [z] "r" (&z), [w] "r" (&w), "m" (x), "m" (y), "m" (z), "m" (w)
+  
+    );
 
 }
 

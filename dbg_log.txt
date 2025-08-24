@@ -27,3 +27,28 @@ tbd:
 	complete diagonal value matrix with correct formatting and instructions
 
 
+# 2025.8.24 - 21:52
+-------------------
+
+Great!! The matrix is fixed properly (thanks again Falco for the advice, switching to C++ and
+figuring out constraints has really helped a lot).
+
+notes: the ending of the 'init_identity' matrix already switches to the front bank, so
+calling it at the beginning of the init_diag_value_matrix was causing issues. additionally we
+are now ignoring the approach of calling the init_identity matrix function since it was a little
+naive. as Falco explained to me, we cannot pass floating point values directly into the back bank
+via inline asm, since the CPU doesn't really know how to do so - they must be juggled through FPUL
+which is a system register that allows for transfer between floating point and general purpose regs.
+the FLOAT instruction will be massively helpful here (note to self: read up more on execution cycles)
+
+changes:
+	removed init_identity() call before inline asm
+	basically reconstructed identity matrix from scratch
+	used fmov.s to copy the addresses of function arguments (x, y, z, w)
+
+results:
+	program compiles successfully with no warnings
+	pvr_set_bg_color also functions as expected
+
+tbd:
+	finish rotation matrices (x, y, z).
