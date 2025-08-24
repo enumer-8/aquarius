@@ -52,3 +52,112 @@ results:
 
 tbd:
 	finish rotation matrices (x, y, z).
+
+# 2025.8.25
+-----------
+
+Okay, now we're running into some interesting issues and I'm breaking out the objdump because I want to 
+know what's going on. Here's the problem:
+
+Since rewriting the diagonal matrix initialization from scratch (and fixing the incorrect syntax),
+I wanted to test whether I could actually see any of the functions running by calling them in main.
+So far, that has been educational.
+
+The problem we're now dealing with: the graphics bug is back; and I am not sure what's going on. 
+Earlier, when I had a matrix function that involved inline asm, calling another function, and 
+clobbering registers/loading registers, there was some graphics corruption with PVR and the 
+background color I set. The BIOS font print log function that I call outside the pvr_scene_begin()
+function still works fine and the memory address of the struct element is still consistently the same
+so having this graphics bug come back is puzzling me. So far I've tried a few things:
+
+> removing the "m" constraints
+> adding clobbers (fr0-fr15, including memory)
+> moving fschg between the 1st fldi0 and 3rd
+> changing the registers I use for the DR copies (DR2, DR6, DR8)
+> using inline instead of __inline__
+
+Here's what pvr_set_bg_color() is doing:
+
+  pvr_set_bg_color(0.1f, 0.0f, 0.4f);
+8c010254:	21 d1       	mov.l	8c0102dc <_main+0xb0>,r1	! 8c018a14 <_pvr_set_bg_color>
+8c010256:	22 c7       	mova	8c0102e0 <_main+0xb4>,r0
+8c010258:	09 f6       	fmov	@r0+,fr6
+8c01025a:	08 f4       	fmov	@r0,fr4
+8c01025c:	0b 41       	jsr	@r1
+8c01025e:	8d f5       	fldi0	fr5
+
+}
+
+It seems like there's some register clashing going on seeing as fr5 is loaded with a 0 at the very end of pvr_set_bg_color()
+and from the objdump, it seems like there are memory issues/register clashing.
+
+> update 00:40
+
+I FIXED IT. JUST THE COMPILER FLAGS IN THE MAKEFILE. TURNS OUT THAT HAVING
+
+-ml -m4-single-only -ffast-math -mfsrra -mfsca 
+
+KIND OF FUCKS THINGS UP.
+
+I wonder why though? Those are the flags taken directly from the Godbolt compiler explorer SH GCC 4.94... oh, maybe a newer version would
+do something different...
+
+Time for more testing. In any case, here's the updated pvr_set_bg_color:
+
+  pvr_set_bg_color(0.1f, 0.0f, 0.4f);
+8c01024c:	20 d1       	mov.l	8c0102d0 <_main+0xa4>,r1	! 8c018a04 <_pvr_set_bg_color>
+8c01024e:	21 c7       	mova	8c0102d4 <_main+0xa8>,r0
+8c010250:	09 f7       	fmov	@r0+,fr7
+8c010252:	09 f5       	fmov	@r0+,fr5
+8c010254:	0b 41       	jsr	@r1
+8c010256:	8d f4       	fldi0	fr4
+
+}
+
+and the updated __inline__ void init_scale_matrix right before the main loop:
+
+__inline__ void init_scale_matrix(float x, float y, float z){
+		
+	init_diag_value_matrix(x, y, z, 1.0f);
+8c010258:	20 d3       	mov.l	8c0102dc <_main+0xb0>,r3	! 404ccccd
+8c01025a:	f3 61       	mov	r15,r1
+8c01025c:	20 d7       	mov.l	8c0102e0 <_main+0xb4>,r7	! 40466666
+8c01025e:	04 71       	add	#4,r1
+8c010260:	f3 62       	mov	r15,r2
+8c010262:	08 72       	add	#8,r2
+8c010264:	32 21       	mov.l	r3,@r1
+8c010266:	32 22       	mov.l	r3,@r2
+8c010268:	f3 63       	mov	r15,r3
+8c01026a:	0c 73       	add	#12,r3
+8c01026c:	9d f1       	fldi1	fr1
+8c01026e:	72 23       	mov.l	r7,@r3
+8c010270:	f3 67       	mov	r15,r7
+8c010272:	10 77       	add	#16,r7
+8c010274:	1a f7       	fmov	fr1,@r7
+  asm(R"(  
+8c010276:	fd fb       	frchg	
+8c010278:	8d f1       	fldi0	fr1
+8c01027a:	8d f2       	fldi0	fr2
+8c01027c:	8d f3       	fldi0	fr3
+8c01027e:	fd f3       	fschg	
+8c010280:	2c f6       	fmov	fr2,fr6
+8c010282:	2c f8       	fmov	fr2,fr8
+8c010284:	8d fb       	fldi0	fr11
+8c010286:	2c fc       	fmov	fr2,fr12
+8c010288:	fd f3       	fschg	
+8c01028a:	8d fe       	fldi0	fr14
+8c01028c:	18 f0       	fmov	@r1,fr0
+8c01028e:	28 f5       	fmov	@r2,fr5
+8c010290:	38 fa       	fmov	@r3,fr10
+8c010292:	78 ff       	fmov	@r7,fr15
+8c010294:	fd fb       	frchg	
+8c010296:	13 dd       	mov.l	8c0102e4 <_main+0xb8>,r13	! 8c010da0 <_bfont_draw_str_vram_fmt>
+8c010298:	f3 6e       	mov	r15,r14
+8c01029a:	13 dc       	mov.l	8c0102e8 <_main+0xbc>,r12	! 8c019030 <_pvr_scene_begin>
+8c01029c:	13 7e       	add	#19,r14
+8c01029e:	13 db       	mov.l	8c0102ec <_main+0xc0>,r11	! 8c019420 <_pvr_list_begin>
+8c0102a0:	13 da       	mov.l	8c0102f0 <_main+0xc4>,r10	! 8c0190d0 <_pvr_list_finish>
+8c0102a2:	14 d9       	mov.l	8c0102f4 <_main+0xc8>,r9	! 8c0194dc <_pvr_scene_finish>
+  init_scale_matrix(3.2f, 3.2f, 3.1f);  
+
+That's all I'm gonna do for tonight, I think. 

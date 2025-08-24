@@ -23,7 +23,6 @@
 #include <stdbool.h>
 
 #define VERBOSE
-#define PENGUIN
 
 // MAIN STARTS HERE!
 int main(int argc, char **argv){
@@ -34,13 +33,14 @@ int main(int argc, char **argv){
   pvr_set_bg_color(0.1f, 0.0f, 0.4f);
 
   dcm_small_file_hdr dcm_file_hdr;
-  
+
+  init_scale_matrix(3.2f, 3.2f, 3.1f); 
 // EVENT LOOP BEGINS HERE
   while(1){    
 
 // ADDRESS POINTER TEST
     bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
-     
+   
 // PVR SCENE SETUP - OPAQUE DRAWING
     pvr_scene_begin();
     pvr_list_begin(PVR_LIST_OP_POLY);
