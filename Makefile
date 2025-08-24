@@ -35,7 +35,7 @@ objdump:
 	$(OBJDUMP) $(TARGET) > objdump.asm
 
 $(TARGET): $(OBJS)
-	kos-cc -o $(TARGET) $(OBJS) -L$(KOS_BASE)/lib -lKGL
+	kos-c++ -o $(TARGET) $(OBJS) -L$(KOS_BASE)/lib -lKGL
 
 run:
 	$(FLYCAST) $(CDI)

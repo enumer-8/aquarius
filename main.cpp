@@ -6,7 +6,7 @@
 
 /* DCM FILE FORMAT COMPONENT DEFINITIONS TAKEN FROM SIMULANT: https://gitlab.com/simulant/community/dcm */    
 
-#include "matrix.h"
+#include "matrix.hpp"
 #include "dcm.h"
 
 #include <dc/pvr.h>
@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #define VERBOSE
+#define PENGUIN
 
 // MAIN STARTS HERE!
 int main(int argc, char **argv){
