@@ -13,7 +13,7 @@ int main(){
 
 	for(deg = 0; deg <= 360; deg++){
 	    double exact = (deg * FSCA_MAX) / 360.0;
-	    int32_t approx = (deg * 23301) >> 8; 
+	    int32_t approx =  (deg * 23301 + 128) >> 8; 
 	    double error = fabs(approx - exact);
 	    total_error += error;
 
@@ -27,7 +27,7 @@ int main(){
 
 	double avg_error = total_error / 361; 
 
-	printf("testing deg_to_fsca approximation\n:");
+	printf("testing deg_to_fsca approximation\n");
 	printf("max error: %f at %d degrees\n", max_error, max_error_deg);
 	printf("average error: %f\n", avg_error);
 
