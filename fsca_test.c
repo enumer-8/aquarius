@@ -27,7 +27,7 @@ int main(){
 
 	double avg_error = total_error / 361; 
 
-	printf("testing deg_to_fsca approximation\n");
+	printf("testing deg_to_fsca approximation with rounding\n");
 	printf("max error: %f at %d degrees\n", max_error, max_error_deg);
 	printf("average error: %f\n", avg_error);
 
