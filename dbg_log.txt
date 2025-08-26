@@ -190,6 +190,7 @@ I'm gonna try this:
 
 #include <stdio.h>
 #include <math.h>
+#include <stdint.h>
 
 #define FSCA_MAX 32767
 
