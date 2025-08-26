@@ -257,3 +257,22 @@ inline uint16 deg2fsca(uint16 deg){
 
 }
 
+> update 16:29
+
+wrote out 2 versions of the routine: fast and safe
+
+fast eschews the modulo in favor of simple add/sub checking
+
+	if(deg >= 360) -= 360;
+	if(deg < 0) += 360;
+
+whereas the safe version still has the modulo. Genuinely have 
+no idea how effective this is gonna be until I actually put 
+together the rotation matrices and start shoving things at the
+PVR to show them on screen, but at least that's outta the way. 
+
+changes:
+	added fast and safe versions of deg2fsca
+
+results:
+	program compiles as normal, no errors/warnings

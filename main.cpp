@@ -41,8 +41,8 @@ int main(int argc, char **argv){
 // ADDRESS POINTER TEST
     bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
  
-    deg2fsca(39); 
-     
+    fast_deg2fsca(782);
+
 // PVR SCENE SETUP - OPAQUE DRAWING
     pvr_scene_begin();
     pvr_list_begin(PVR_LIST_OP_POLY);

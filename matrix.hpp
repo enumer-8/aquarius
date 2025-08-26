@@ -158,7 +158,7 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
 }
 
-inline uint16 deg2fsca(uint16 deg){
+inline uint16 safe_deg2fsca(uint16 deg){
 
 	deg = deg % 360;
 	if (deg < 0) {
@@ -174,6 +174,17 @@ inline uint16 deg2fsca(uint16 deg){
 }
 
 
+inline uint16 fast_deg2fsca(uint16 deg){
+
+	if(deg >=360) deg -= 360;
+	if(deg  <  0) deg += 360;
+
+	uint32 deg_32 = (uint32)deg;
+
+	uint32 angle = (deg_32 * 23301 + 128) >> 8;
+
+	return angle & tau;
+}
 	
 
 
