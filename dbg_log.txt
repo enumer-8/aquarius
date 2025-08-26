@@ -160,4 +160,75 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 8c0102a2:	14 d9       	mov.l	8c0102f4 <_main+0xc8>,r9	! 8c0194dc <_pvr_scene_finish>
   init_scale_matrix(3.2f, 3.2f, 3.1f);  
 
-That's all I'm gonna do for tonight, I think. 
+That's all I'm gonna do for tonight, I think.
+
+# 2025.8.26
+-----------
+
+Angles and trig stuff I'm messing around with just for the sake of exploring fixed point math:
+
+Everything revolves around FSCA; SH-4 instruction that performs cos and sin in one op and stores them in a double
+precision floating point register. However it only takes in integers in the range 0-32767, or a 16-bit int. 
+
+I mentioned before that I want to explore using tau instead of pi for my rotations, since tau describes 2pi or 
+1 full rotation of a circle. Mathematically speaking I think that just looks nicer and is easier for my brain
+to deal with. 
+
+so we use
+
+#define tau 32767
+
+which is fine; technically, it should be 32768 for more accuracy but for FSCA and hacky reasons we wrap that last bit
+to 0 by going
+
+&ing tau against itself 
+
+Dreamcast vector math hints page https://yam.20to4.net/dreamcast/hints/index.html#Vector Math Instructions
+suggests redefining angle representations so that pi = 16384
+
+I'm gonna try this:
+
+#include <stdio.h>
+#include <math.h>
+
+#define FSCA_MAX 32767
+
+int main(){
+
+	int deg;
+	double total_error = 0;
+	double max_error   = 0;
+	int max_error_deg  = 0;
+
+    for(deg = 0; deg <= 360; deg++){
+
+	double exact = (deg * FSCA_MAX) / 360.0;
+
+	int32_t approx = (deg * 23301) >> 8; 
+
+	double error = fabs(approx - exact);
+	total_error += error;
+
+	if(error > max_error){
+		max_error = error;
+		max_error_deg = deg;
+	}
+    }
+
+
+	double avg_error = total_error / 361; 
+
+	printf("testing deg_to_fsca approximation\n:);
+	printf("max error: %f at %d degrees\n", max_error, max_error_deg);
+	printf("average error: %f\n, avg_error);
+
+	return 0;
+}
+
+Results:
+
+	max_error: 0.991667 at 51 degrees
+	avg_error: 0.481025
+
+I think I'll take it.
+ 

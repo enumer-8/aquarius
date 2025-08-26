@@ -10,3 +10,5 @@
 *.a
 
 *.exe
+
+assets/*

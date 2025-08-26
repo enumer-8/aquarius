@@ -3,7 +3,16 @@
 
 #include <stdio.h>
 
-#define tau 32767
+#define tau        32767 	// 0x7FFF, or FSCA maximum value
+#define pi 	   16384
+#define deg_180    8192
+#define deg_45	   4096
+#define magic_num  23301        // explained below
+
+#define deg2rad_sf
+#define rad2deg_sf
+
+
 
 // NOTES ON TAU 
 // =================================
@@ -28,6 +37,36 @@
 // 0x7FFF as well but I'm afraid to 
 // use hex with defines for the moment 
 // because KOS reasons :) 
+
+
+// NOTES ON CALCULATING MAGIC NUMBER
+// =================================
+// I suck at math so I was worried 
+// about this part. Essentially here's
+// what's going on. 
+//
+// Experimenting with fast and hacky
+// fixed-point math to tackle the FSCA
+// instruction's requirement to take in
+// angles in the form of ints from 0-32767
+// convenient because this basically takes
+// the form of a 16-bit integer (which I'm
+// sure was the point) but regardless. 
+// magic_num was calculated through:
+//
+// 	2pi rads = 360 degrees 
+// 	or 1 full rotation
+// 	magic_num = (32767 * 256) / 360
+// 	= 8384512 / 360 which is roughly
+// 	23301
+//
+// 	256 = 2^8 or >> 8
+//
+// degrees are taken in as a 32-bit int
+// and then the calculation is performed
+//
+// safety: thinking of having the whole thing
+// clamped from 0-32767 by just doing & 0x7FFF or tau
 
 
 // TRANSFORMATION MATRICES SECTION
@@ -115,6 +154,11 @@ __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 __inline__ void init_scale_matrix(float x, float y, float z){
 		
 	init_diag_value_matrix(x, y, z, 1.0f);
+}
+
+__inline__ void init_rotation_matrix_y(){
+
+	
 }
 
 #endif
