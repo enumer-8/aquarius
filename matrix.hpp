@@ -94,9 +94,15 @@
    float m[4][4];
  } mat4x4_t;
 
- typedef struct __attribute__((packed, aligned(4))){
+ typedef struct{ 
    float x, y, z, w;
  } vec4_simple_t;
+
+typedef struct __attribute__((packed, aligned(4))){
+   float pos_x, pos_y, pos_z; 
+   float orientaton[3];
+   float cam_fov; 
+} simple_cam_t;
 
 
 // Thanks for the notes on my diagonal matrix, Falco
@@ -158,34 +164,34 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
 }
 
-inline uint16 safe_deg2fsca(uint16 deg){
+inline int16 safe_deg2fsca(int16 deg){
 
 	deg = deg % 360;
 	if (deg < 0) {
 	    deg += 360;
 	}
 
-	uint32 deg_32 = (uint32)deg;
+	int32 deg_32 = (int32)deg;
 
-	uint32 angle = (deg_32 * 23301 + 128) >> 8;
+	int32 angle = (deg_32 * magic_num + 128) >> 8;
 
 	return angle & tau;
 	
 }
 
 
-inline uint16 fast_deg2fsca(uint16 deg){
+inline int16 fast_deg2fsca(int16 deg){
 
 	if(deg >=360) deg -= 360;
 	if(deg  <  0) deg += 360;
 
-	uint32 deg_32 = (uint32)deg;
+	int32 deg_32 = (int32)deg;
 
-	uint32 angle = (deg_32 * 23301 + 128) >> 8;
+	int32 angle = (deg_32 * magic_num + 128) >> 8;
 
 	return angle & tau;
 }
-	
+
 
 
 #endif

@@ -39,9 +39,9 @@ int main(int argc, char **argv){
   while(1){    
 
 // ADDRESS POINTER TEST
-    bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr is: %p", (void *)&dcm_file_hdr.version);
- 
-    fast_deg2fsca(782);
+    bfont_draw_str_vram_fmt(30, 30, true, "Address of file_hdr version  is: %p",   (void *)&dcm_file_hdr.version);
+    bfont_draw_str_vram_fmt(30, 60, true, "Address of file_hdr material is: %p",   (void *)&dcm_file_hdr.material_count);
+    bfont_draw_str_vram_fmt(30, 90, true, "Address of file_hdr index size is: %p", (void *)&dcm_file_hdr.index_size);
 
 // PVR SCENE SETUP - OPAQUE DRAWING
     pvr_scene_begin();
