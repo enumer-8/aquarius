@@ -236,3 +236,24 @@ Results with rounding:
 	max_error: 0.525000 at 333 degrees
 	avg_error: 0.249692
 
+> update 15:28
+
+Wow, it actually works. Called it in main, no errors no warnings, 
+objdump looks normal as well. I'm genuinely shocked. 
+
+basically we're looking at 
+
+inline uint16 deg2fsca(uint16 deg){
+	deg = deg % 360;
+
+	if(deg < 0) deg += 360;
+
+	uint32 deg_32 = (uint32)deg;
+
+	uint32 angle = (deg_32 * 23301 + 128) >> 8;
+
+	return angle & tau;
+	deg %  360;
+
+}
+
