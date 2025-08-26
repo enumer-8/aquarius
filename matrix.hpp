@@ -2,6 +2,8 @@
 #define MATRIX_H
 
 #include <stdio.h>
+#include <kos.h>
+
 
 #define tau        32767 	// 0x7FFF, or FSCA maximum value
 #define pi 	   16384
@@ -156,9 +158,23 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
 }
 
-__inline__ void init_rotation_matrix_y(){
+inline uint16 deg2fsca(uint16 deg){
 
+	deg = deg % 360;
+	if (deg < 0) {
+	    deg += 360;
+	}
+
+	uint32 deg_32 = (uint32)deg;
+
+	uint32 angle = (deg_32 * 23301 + 128) >> 8;
+
+	return angle & tau;
 	
 }
+
+
+	
+
 
 #endif
