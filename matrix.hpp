@@ -103,7 +103,10 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 
 // thanks pcercuei for the advice on this
 inline int16 fast_deg2fsca(int16 deg){
-    deg = (deg % 360) % 360;
+    deg = deg % 360;
+    if(deg < 360){
+	deg += 360;
+    } 
     return ((int32)deg * tau) / 360; 
 }
 
