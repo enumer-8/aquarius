@@ -5,70 +5,7 @@
 #include <kos.h>
 
 
-#define tau        32767 	// 0x7FFF, or FSCA maximum value
-#define pi 	   16384
-#define deg_180    8192
-#define deg_45	   4096
-#define magic_num  23301        // explained below
-
-#define deg2rad_sf
-#define rad2deg_sf
-
-
-
-// NOTES ON TAU 
-// =================================
-// Basically, this is just a test of
-// choosing tau over pi for reasons 
-// relating to ease of conversion.
-// Tau is 2pi and maps quite nicely
-// to 32767 (technically 32768) so 
-// I can use fixed point math with 
-// FSCA and not have to worry too much
-// about messing around with float
-// truncation with FTRC. The actual
-// instruction doesn't have that much
-// overhead, but seeing if it's possible
-// to avoid it anyway is a fun challenge.
-// The plan is to have tau wrap around
-// to 0 every time it reaches its true
-// value of 32768 with:
-// angle = (angle + delta) & 0x7FFF
-//
-// I guess I could define tau to be 
-// 0x7FFF as well but I'm afraid to 
-// use hex with defines for the moment 
-// because KOS reasons :) 
-
-
-// NOTES ON CALCULATING MAGIC NUMBER
-// =================================
-// I suck at math so I was worried 
-// about this part. Essentially here's
-// what's going on. 
-//
-// Experimenting with fast and hacky
-// fixed-point math to tackle the FSCA
-// instruction's requirement to take in
-// angles in the form of ints from 0-32767
-// convenient because this basically takes
-// the form of a 16-bit integer (which I'm
-// sure was the point) but regardless. 
-// magic_num was calculated through:
-//
-// 	2pi rads = 360 degrees 
-// 	or 1 full rotation
-// 	magic_num = (32767 * 256) / 360
-// 	= 8384512 / 360 which is roughly
-// 	23301
-//
-// 	256 = 2^8 or >> 8
-//
-// degrees are taken in as a 32-bit int
-// and then the calculation is performed
-//
-// safety: thinking of having the whole thing
-// clamped from 0-32767 by just doing & 0x7FFF or tau
+#define tau        65535 	// 0xFFFF, or FSCA maximum value
 
 
 // TRANSFORMATION MATRICES SECTION
@@ -164,34 +101,10 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
 }
 
-inline int16 safe_deg2fsca(int16 deg){
-
-	deg = deg % 360;
-	if (deg < 0) {
-	    deg += 360;
-	}
-
-	int32 deg_32 = (int32)deg;
-
-	int32 angle = (deg_32 * magic_num + 128) >> 8;
-
-	return angle & tau;
-	
-}
-
-
+// thanks pcercuei for the advice on this
 inline int16 fast_deg2fsca(int16 deg){
-
-	if(deg >=360) deg -= 360;
-	if(deg  <  0) deg += 360;
-
-	int32 deg_32 = (int32)deg;
-
-	int32 angle = (deg_32 * magic_num + 128) >> 8;
-
-	return angle & tau;
+	int16 angle = ((int32)deg * tau / 360) & 0xFFFF;
+	return angle;
 }
-
-
 
 #endif

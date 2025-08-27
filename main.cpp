@@ -27,14 +27,16 @@
 // MAIN STARTS HERE!
 int main(int argc, char **argv){
 
+
+
   vid_set_mode(DM_640x480, PM_RGB565);
   pvr_init_defaults();  
 
   pvr_set_bg_color(0.1f, 0.0f, 0.4f);
 
   dcm_small_file_hdr dcm_file_hdr;
+  fast_deg2fsca(319);
 
-  init_scale_matrix(3.2f, 3.2f, 3.1f); 
 // EVENT LOOP BEGINS HERE
   while(1){    
 

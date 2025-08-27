@@ -276,3 +276,28 @@ changes:
 
 results:
 	program compiles as normal, no errors/warnings
+
+
+# 2025.8.27
+-----------
+
+Okay! New updates on the whole deg2fsca thing; turns out I was massively overthinking it. 
+Which is good to know now rather than later. Helpful conversation on the discord with
+pcercuei and falco about the risk of trying to outsmart the compiler - GCC's good at this
+stuff, but less so back-bank XMTRX and vectorization stuff which almost
+always benefits from handwritten asm. Gonna try and rewrite and profile against
+Compiler Explorer and get the results back. 
+
+Gonna keep all the above up for historical reasons but probably commented out - 
+the functions themselves are gonna be rewritten
+
+Now we're trying
+
+inline int16 fast_deg2fsca(int16 deg){
+	int32 angle = ((int32)deg * 65535 / 360) & 0xFFFF;
+	return angle;
+}
+
+Still kind of wondering whether I should mask or not as a safety check
+I'll just keep it there for now and move on to implementing rotation matrices
+
