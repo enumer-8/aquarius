@@ -301,3 +301,18 @@ inline int16 fast_deg2fsca(int16 deg){
 Still kind of wondering whether I should mask or not as a safety check
 I'll just keep it there for now and move on to implementing rotation matrices
 
+
+# 2025.8.28
+-----------
+
+So, I've ended up reworking the fast_deg2fsca function again based on stuff 
+I read in the docs. since fsca basically takes in a 32-bit int and interprets
+it as a 16.16 fixed point int, i've reworked the function to reflect the size.
+
+changes:
+	int16 in function fast_deg2fsca -> int32
+	added normalization guard (deg % 360)
+	wrote out rotation_matrix for z axis
+
+results:
+			

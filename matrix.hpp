@@ -5,8 +5,7 @@
 #include <kos.h>
 
 
-#define tau        65535 	// 0xFFFF, or FSCA maximum value
-
+#define tau        65535 	// 0xFFFF 
 
 // TRANSFORMATION MATRICES SECTION
 // =================================
@@ -33,11 +32,11 @@
 
  typedef struct{ 
    float x, y, z, w;
- } vec4_simple_t;
+} vec4_simple_t;
 
 typedef struct __attribute__((packed, aligned(4))){
    float pos_x, pos_y, pos_z; 
-   float orientaton[3];
+   float orientation[3];
    float cam_fov; 
 } simple_cam_t;
 
@@ -68,7 +67,7 @@ __inline__ void init_identity(){
 
 __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 
-  asm(R"(  
+    asm(R"(  
   
     frchg                
    
@@ -101,15 +100,47 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
 }
 
-// thanks pcercuei for the advice on this
-inline int16 fast_deg2fsca(int16 deg){
+inline int32 fast_deg2fsca(int32 deg){
     deg = deg % 360;
     if(deg < 360){
 	deg += 360;
     } 
-    return ((int32)deg * tau) / 360; 
+    return (deg * tau) / 360; 
 }
 
+void mat4x4_rotate_z(int32 angle){
+	
+    fast_deg2fsca(angle);
 
+	asm volatile(R"(
+	  
+    ftrc %0, fpul    // takes in input and places it in FPUL
+    frchg            // change to back bank 
+    fsca fpul, dr4   // do the fsca and store sin in fr4, cos in fr5 - natural ordering
+
+    /* moving on to setting up the rest of the matrix */
+
+    fldi0 fr2       
+    fldi0 fr3
+    fmov  fr5, fr0
+    fmov  fr1, fr4
+    fneg  fr4
+	fschg    
+	fmov  dr2, dr6
+    fmov  dr2, dr8
+    fldi1 dr10
+    fldi0 fr11
+    fmov  dr2, dr12
+    fldi0 dr14
+    fldi1 fr15
+    fschg 
+    frchg 
+	  )"
+    
+    :
+    : "ld"(angle)   
+    : "fpul"
+	);
+}
 
 #endif
