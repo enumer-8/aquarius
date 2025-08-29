@@ -110,14 +110,13 @@ inline int32 fast_deg2fsca(int32 deg){
 
 __inline__ void mat4x4_rotate_z(int32 z_deg){
         
-    asm volatile(R"(
+    int32 z_val = fast_deg2fsca(z_deg);
+
+	asm volatile(R"(
 
     lds %0, fpul     
     frchg            
     fsca fpul, dr4   
-
-    /* moving on to setting up the rest of the matrix */
-
     fldi0 fr2       
     fldi0 fr3
     fmov  fr4, fr1
@@ -136,7 +135,7 @@ __inline__ void mat4x4_rotate_z(int32 z_deg){
       )"
     
     :
-    : "f" (z_deg)
+    : "f" (z_val)
     : "fpul"
     );
 }
