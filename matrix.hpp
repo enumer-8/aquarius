@@ -135,7 +135,7 @@ __inline__ void mat4x4_rotate_z(int32 z_deg){
       )"
     
     :
-    : "f" (z_val)
+    : "r" (z_val)
     : "fpul"
     );
 }
