@@ -102,7 +102,7 @@ __inline__ void init_scale_matrix(float x, float y, float z){
 
 inline int32 fast_deg2fsca(int32 deg){
     deg = deg % 360;
-    if(deg < 360){
+    if(deg < 0){
 	deg += 360;
     } 
     return ((int32)deg * tau) / 360; 
@@ -110,16 +110,13 @@ inline int32 fast_deg2fsca(int32 deg){
 
 void mat4x4_rotate_z(int32 z_deg){
 
-	int32 fsca_angle = fast_deg2fsca(z_deg);
+	int32 z_val = fast_deg2fsca(z_deg);
     	
-  	asm volatile(R"(
+  	asm(R"(
 
     lds %0, fpul	 
     frchg            
-    fsca fpul, dr4   
-
-    /* moving on to setting up the rest of the matrix */
-
+    fsca fpul, dr4  
     fldi0 fr2       
     fldi0 fr3
     fmov  fr4, fr1
@@ -135,11 +132,11 @@ void mat4x4_rotate_z(int32 z_deg){
     fldi1 fr15
     fschg 
     frchg 
-	  )"
+	)"
     
     :
-    : [fsca_angle] "r" (fsca_angle)
-    : "fpul", "fr0", "fr1"
+    : "r" (z_val)
+    : "fpul"
 	);
 }
 
