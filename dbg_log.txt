@@ -319,3 +319,18 @@ results:
 	
 
 The logic here should be sound - I'm just banging my head against the constraints.
+
+# 2025.8.29
+-----------
+
+Oh my god. FINALLY. FINALLY DID IT.
+
+changes:
+	inlined the rotation matrix function
+
+results:
+	program compiles with no errors or warnings.
+
+tbd:
+	finish x and y matrices
+	finish translation matrix

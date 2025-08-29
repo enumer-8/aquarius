@@ -5,7 +5,7 @@
 #include <kos.h>
 
 
-#define tau        65535 	// 0xFFFF 
+#define tau 65535 	// 0xFFFF 
 
 // TRANSFORMATION MATRICES SECTION
 // =================================
@@ -105,25 +105,26 @@ inline int32 fast_deg2fsca(int32 deg){
     if(deg < 0){
 	deg += 360;
     } 
-    return ((int32)deg * tau) / 360; 
+    return (deg * tau) / 360; 
 }
 
-void mat4x4_rotate_z(int32 z_deg){
+__inline__ void mat4x4_rotate_z(int32 z_deg){
+        
+    asm volatile(R"(
 
-	int32 z_val = fast_deg2fsca(z_deg);
-    	
-  	asm(R"(
-
-    lds %0, fpul	 
+    lds %0, fpul     
     frchg            
-    fsca fpul, dr4  
+    fsca fpul, dr4   
+
+    /* moving on to setting up the rest of the matrix */
+
     fldi0 fr2       
     fldi0 fr3
     fmov  fr4, fr1
     fmov  fr5, fr0
     fneg  fr4
-	fschg    
-	fmov  dr2, dr6
+    fschg    
+    fmov  dr2, dr6
     fmov  dr2, dr8
     fldi1 dr10
     fldi0 fr11
@@ -132,12 +133,12 @@ void mat4x4_rotate_z(int32 z_deg){
     fldi1 fr15
     fschg 
     frchg 
-	)"
+      )"
     
     :
-    : "r" (z_val)
+    : "f" (z_deg)
     : "fpul"
-	);
+    );
 }
 
 #endif
