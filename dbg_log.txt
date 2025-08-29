@@ -315,4 +315,7 @@ changes:
 	wrote out rotation_matrix for z axis
 
 results:
-			
+	errors: invalid operands for opcode. 
+	
+
+The logic here should be sound - I'm just banging my head against the constraints.

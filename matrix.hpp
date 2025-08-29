@@ -108,16 +108,15 @@ inline int32 fast_deg2fsca(int32 deg){
     return ((int32)deg * tau) / 360; 
 }
 
-void mat4x4_rotate_z(float z){
+void mat4x4_rotate_z(int32 z_deg){
 
-    
-    z *= ;
-	
+	int32 fsca_angle = fast_deg2fsca(z_deg);
+    	
   	asm volatile(R"(
 
-    ftrc %0, fpul	 
-    frchg            // change to back bank
-    fsca fpul, dr4   // do the fsca and store sin in fr4, cos in fr5 - natural ordering
+    lds %0, fpul	 
+    frchg            
+    fsca fpul, dr4   
 
     /* moving on to setting up the rest of the matrix */
 
@@ -126,8 +125,8 @@ void mat4x4_rotate_z(float z){
     fmov  fr4, fr1
     fmov  fr5, fr0
     fneg  fr4
-	  fschg    
-	  fmov  dr2, dr6
+	fschg    
+	fmov  dr2, dr6
     fmov  dr2, dr8
     fldi1 dr10
     fldi0 fr11
@@ -139,8 +138,8 @@ void mat4x4_rotate_z(float z){
 	  )"
     
     :
-    : "f"(z)   
-    : "fpul"
+    : [fsca_angle] "r" (fsca_angle)
+    : "fpul", "fr0", "fr1"
 	);
 }
 
