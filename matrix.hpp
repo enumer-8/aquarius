@@ -98,7 +98,7 @@ __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 
 __inline__ void init_scale_matrix(float x, float y, float z){
 	init_diag_value_matrix(x, y, z, 1.0f);
-    printf("This is working!\n");
+
 }
 
 inline int32 fast_deg2fsca(int32 deg){

@@ -25,9 +25,13 @@
 void testing_time(){
 
     uint64 start_time = timer_ns_gettime64();
-    int32 i;
-    for(i = 0; i < 360; i++)
-    volatile float temp = fast_deg2fsca(i);
+    int32 i, j;
+    for(i = 0; i < 3600; i++){
+      for(j = 0; j < 360; j++)
+    volatile int32 temp = fast_deg2fsca(j);
+      
+    }
+    
     uint64 end_time = timer_ns_gettime64();
     printf("Took %llu nanoseconds:\n",  end_time - start_time);
 }
