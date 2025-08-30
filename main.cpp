@@ -11,8 +11,7 @@
 #include <dc/fmath.h>
 #include <dc/maple/controller.h>
 #include <dc/biosfont.h>
-#include <arch/timer.h>
-#include <dc/perf_monitor.h>
+#include <dc/perfctr.h>
 
 // #include <dc/matrix.h>
 // #include <dc/matrix3d.h>
@@ -22,12 +21,19 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+// thanks Falco
+void testing_time(){
 
+    uint64 start_time = timer_ns_gettime64();
+    int32 i;
+    for(i = 0; i < 360; i++)
+    volatile float temp = fast_deg2fsca(i);
+    uint64 end_time = timer_ns_gettime64();
+    printf("Took %llu nanoseconds:\n",  end_time - start_time);
+}
 
 // MAIN STARTS HERE!
 int main(int argc, char **argv){
-
-
 
   vid_set_mode(DM_640x480, PM_RGB565);
   pvr_init_defaults();  
@@ -36,23 +42,15 @@ int main(int argc, char **argv){
 
   pvr_set_bg_color(0.9f, 0.0f, 0.4f);
 
-// EVENT LOOP BEGINS HERE
-  while(1){   
+    testing_time();
 
-    int32 i;
-    for(i = 0; i < 360; i++){
-      fast_deg2fsca(i);
-	    printf("Degrees are: %ld\n", i);
-    }
-
-// PVR SCENE SETUP - OPAQUE DRAWING
+    // PVR SCENE SETUP - OPAQUE DRAWING
     pvr_scene_begin();
     pvr_list_begin(PVR_LIST_OP_POLY);
     
     pvr_list_finish();
     pvr_scene_finish();
 
-    }
   return 0;
 
 }

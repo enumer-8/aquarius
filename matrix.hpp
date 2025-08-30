@@ -107,7 +107,6 @@ inline int32 fast_deg2fsca(int32 deg){
 	deg += 360;
     } 
     return (deg * tau) / 360; 
-	printf("Degrees are: %ld\n", deg);
 }
 
 __inline__ void mat4x4_rotate_z(int32 z_deg){
