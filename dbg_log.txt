@@ -334,3 +334,21 @@ results:
 tbd:
 	finish x and y matrices
 	finish translation matrix
+
+# 2024.8.30
+-----------
+
+Okay! Now just working on test suite and integrating perf_ctr/perf_monitor API
+into the routines. It's a little tricky but I'll get there. Testing the fast_deg2fsca
+function and writing the results to stdout works like a charm.
+
+changes:
+	testing Flycast serial output by printing function results to stdout
+
+results:
+	fast_deg2fsca works like a charm and correctly wraps degrees.
+
+tbd:
+	finish x and y matrices
+	finish translation matrix
+	

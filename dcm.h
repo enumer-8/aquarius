@@ -3,6 +3,8 @@
 
 #include <kos.h>
 
+/* DCM FILE FORMAT COMPONENT DEFINITIONS TAKEN FROM SIMULANT: https://gitlab.com/simulant/community/dcm */    
+
 // DEFINING DCM FILE FORMAT FOR PARSING
 // ====================================
 

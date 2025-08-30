@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <kos.h>
+#include <dc/perf_monitor.h>
 
 
 #define tau 65535 	// 0xFFFF 
@@ -96,8 +97,8 @@ __inline__ void init_diag_value_matrix(float x, float y, float z, float w){
 }
 
 __inline__ void init_scale_matrix(float x, float y, float z){
-		
 	init_diag_value_matrix(x, y, z, 1.0f);
+    printf("This is working!\n");
 }
 
 inline int32 fast_deg2fsca(int32 deg){
@@ -106,6 +107,7 @@ inline int32 fast_deg2fsca(int32 deg){
 	deg += 360;
     } 
     return (deg * tau) / 360; 
+	printf("Degrees are: %ld\n", deg);
 }
 
 __inline__ void mat4x4_rotate_z(int32 z_deg){
@@ -140,4 +142,39 @@ __inline__ void mat4x4_rotate_z(int32 z_deg){
     );
 }
 
-#endif
+//// Note to self: always do second set of sc ops since they align right the first time!
+//__inline__ void mat4x4_rotate_y(int32 y_deg){
+//        
+//    int32 y_val = fast_deg2fsca(y_deg);
+//
+//	asm volatile(R"(
+//
+//    lds %0, fpul     
+//    frchg            
+//    fsca fpul, dr4   
+//    fldi0 fr3
+//    fldi0 fr4
+//    fldi1 fr5
+//    fmov fr2, fr1
+//    fmov  fr4, fr1
+//    fmov  fr5, fr0
+//    fneg  fr4
+//    fschg    
+//    fmov  dr2, dr6
+//    fmov  dr2, dr8
+//    fldi1 dr10
+//    fldi0 fr11
+//    fmov  dr2, dr12
+//    fldi0 dr14
+//    fldi1 fr15
+//    fschg 
+//    frchg 
+//      )"
+//    
+//    :
+//    : "r" (z_val)
+//    : "fpul"
+//    );
+//}
+
+#endif       

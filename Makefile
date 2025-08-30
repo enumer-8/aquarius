@@ -15,7 +15,7 @@ OBJS = main.o
 DISK = ~/mkdcdisc/builddir/mkdcdisc
 OBJDUMP = sh-elf-objdump -d -S 
 
-all: rm-elf $(TARGET)
+all: rm-elf $(TARGET) 
 
 include $(KOS_BASE)/Makefile.rules
 
